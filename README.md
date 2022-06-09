@@ -3,7 +3,7 @@
 ## Work in Progress
 
 ### implemented: 
-*[x] get list of international stocks from onvista  
+- [x] get list of international stocks from onvista  
 *[x] make it faster by multiprocessing resultspages  
 *[x] join into one big pandas dataframe  
 *[x] extract ISIN from url column and put it into it's own column  
