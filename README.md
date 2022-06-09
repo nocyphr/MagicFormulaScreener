@@ -9,7 +9,7 @@
 *[x] extract ISIN from url column and put it into it's own column
 *[x] remove unnecessary columns from dataframe
 *[x] generate csv from dataframe
-*[ ] generate initial index of ISIN:Symbol via yahoo search API
+*[x] generate initial index of ISIN:Symbol via yahoo search API
 *[ ] clean up index
 *[ ] fill in blanks
 *[ ] check for false entries
