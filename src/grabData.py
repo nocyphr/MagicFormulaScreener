@@ -1,6 +1,9 @@
 import pandas as pd
 from src.misc import MultiProcessor
 from src.web import WebPage
+from src.mutateData import PandaStocks, Mutate
+
+
 
 class Onvista:
     def __init__(self):
@@ -8,22 +11,24 @@ class Onvista:
         self.results = Results(self.url + str(0))
         self.bigPanda = PandaStocks(self.results.page)
 
-    def buildPandas(self, url):
+
+    def generate_stocks_list(self):
+        max_range_of_results = self.results.maxResults + 50
+        urlList = [self.url + str(_) for _ in range(1, max_range_of_results, 50)]
+
+        pandaList = MultiProcessor(self.build_panda, urlList).resultsList
+
+        self.bigPanda.joinPandas(pandaList)
+        self.save_data()
+
+
+    def save_data(self):
+        panda = self.bigPanda.pdStocks
+        Mutate('stocksList.csv', panda).make_csv()
+
+    def build_panda(self, url):
         page = Results(url).page
         return PandaStocks(page).pdStocks
-
-    def getStockList(self, csvName = False):
-        if csvName:
-            self.bigPanda.pdStocks = pd.read_csv(csvName, index_col = None)
-
-        if not csvName:
-            urlList = [self.url + str(_) for _ in range(1, self.results.maxResults + 50, 50)]
-            pandaList = MultiProcessor(self.buildPandas, urlList).resultsList
-
-            self.bigPanda.joinPandas(pandaList)
-
-    def getCSV(self, csvName = 'stocksList.csv'):
-        self.bigPanda.pdStocks.to_csv(csvName, index= False)
 
 
 
@@ -32,21 +37,6 @@ class Results:
         self.page = WebPage(url, 1)
         self.maxResults = self.page.getJSON()['metaData']['totalHits']
 
-
-
-class PandaStocks:
-    def __init__(self, Page = False):
-        if Page:
-            self.page = Page.getJSON()['stocks']
-        self.pdStocks = pd.DataFrame(self.page)
-
-    def joinPandas(self, pandaList):
-        self.pdStocks = pd.concat([self.pdStocks] + pandaList, ignore_index = True)
-        self.cleanData()
-
-    def cleanData(self):
-        self.pdStocks['isin'] = self.pdStocks['url'].apply(lambda x: x.split('-')[-1])
-        self.pdStocks.drop(['figures', 'last', 'nsin', 'date'], axis = 1, inplace = True)
 
 
 class Yahoo:
@@ -67,16 +57,18 @@ class Yahoo:
     def getSymbols(self):
         self.resultsList = MultiProcessor(self.builtResults, self.searchUrlList, poolsize = 30).resultsList
 
-    def getCSV(self, csvName = 'isinSymbolList.csv'):
-        pd.DataFrame(self.resultsList).to_csv(csvName, index = False)
+    def save_data(self):
+        panda = pd.DataFrame(self.resultsList)
+        csv = CSV(panda)
+        csv.make_csv('isinSymbolList.csv')
 
 # o = Onvista()
 # o.getStockList()
 # o.getCSV()
 o = Onvista()
-o.getStockList('stocksList.csv')
+o.generate_stocks_list('stocksList.csv')
 t = [i for i in o.bigPanda.pdStocks['isin']]
 y = Yahoo(t)
 y.getSymbols()
 print(y.resultsList)
-y.getCSV()
+y.save_data()
