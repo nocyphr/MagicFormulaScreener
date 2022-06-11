@@ -10,11 +10,11 @@
 - [x] remove unnecessary columns from dataframe  
 - [x] generate csv from dataframe  
 - [x] generate initial index of ISIN:Symbol via yahoo search API  
-- [ ] clean up index  
-- [ ] fill in blanks  
-- [ ] check for false entries  
-- [ ] remove dead/unavailable companies  
-- [ ] adjust ISIN:Symbol matching method to lookup first in existing index before going to yahoo  
-- [ ] get number of shares per stock and last price(onvista)  
+- [x] clean up index  
+- [x] fill in blanks  
+- [x] check for false entries
 - [ ] use torpy to simulate proxy  
-- [ ] get fundamentals (yahoo  
+- [ ] get number of shares per stock and last price(onvista)  
+- [ ] remove dead/unavailable companies  
+- [ ] adjust ISIN:Symbol matching method to lookup first in existing index before going to yahoo
+- [ ] get fundamentals (yahoo)
