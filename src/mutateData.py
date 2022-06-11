@@ -12,21 +12,17 @@ class PandaStocks:
 
 
 class Mutate:
-    def __init__(self, csvName = 'dummy.csv', panda = False ):
+    def __init__(self, csvName = 'dummy.csv', panda = False, read = True):
         self.csvName = csvName
-        self.csvPath = f'./Data/{csvName}'
-        self.panda = self.catch_the_panda(panda)
+        self.csvPath = f'../Data/{self.csvName}'
+        self.panda = self.catch_a_panda(panda, read)
 
 
-    def catch_the_panda(self, panda):
-        if panda:
-            return panda
-
-        i_exist = exists(self.csvPath)
-        if i_exist:
+    def catch_a_panda(self, panda, read):
+        if read:
             return pd.read_csv(self.csvPath, index_col=None)
-        if i_exist == False:
-            raise FileNotFoundError(f'{self.csvPath} does not seem to exist')
+        return panda
+
 
 
     def make_csv(self):
@@ -34,7 +30,7 @@ class Mutate:
 
 
     def add_column_isin(self):
-        self.panda['isin'] = self.panda['url'].apply(lambda x: x.xplit('-')[-1])
+        self.panda['isin'] = self.panda['url'].apply(lambda x: x.split('-')[-1])
         self.make_csv()
 
     def fetch_isin_list(self):

@@ -9,6 +9,7 @@ class Onvista:
     def __init__(self):
         self.url = 'https://www.onvista.de/aktien/boxes/finder-json?offset='
         self.results = Results(self.url + str(0))
+        self.save_as = 'stocksList.csv'
         self.big_panda = PandaStocks(self.results.page)
 
 
@@ -24,26 +25,13 @@ class Onvista:
 
     def save_data(self):
         panda = self.big_panda.pdStocks
-        Mutate('stocksList.csv', panda).make_csv()
+        save = Mutate( csvName=self.save_as, panda= panda, read = False)
+        save.make_csv()
 
     def build_panda(self, url):
         page = Results(url).page
         return PandaStocks(page).pdStocks
 
-
-
-class Results:
-    def __init__(self, url):
-        self.page = WebPage(url, 1)
-        self.max_results = self.page.getJSON()['metaData']['totalHits']
-
-class IsinList:
-    def __init__(self, csvName):
-        self.stocks_list = Mutate(csvName).panda
-        if 'isin' in self.stocks_list.columns:
-            self.isin_list = [i for i in self.stocks_list['isin']]
-        else:
-            raise ValueError(f'{csvName} does not contain a column "isin"')
 
 
 class Yahoo:
@@ -71,3 +59,21 @@ class Yahoo:
 
 
 
+class Results:
+    def __init__(self, url):
+        self.page = WebPage(url, 1)
+        self.max_results = self.page.getJSON()['metaData']['totalHits']
+
+class IsinList:
+    def __init__(self, csvName):
+        self.stocks_list = Mutate(csvName).panda
+        if 'isin' in self.stocks_list.columns:
+            self.isin_list = [i for i in self.stocks_list['isin']]
+        else:
+            raise ValueError(f'{csvName} does not contain a column "isin"')
+
+
+onvista = Onvista()
+onvista.generate_stocks_list()
+Mutate(onvista.save_as).add_column_isin()
+Mutate(onvista.save_as).drop_columns(['last', 'date', 'nsin', 'figures'])
