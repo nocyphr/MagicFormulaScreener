@@ -1,6 +1,7 @@
 import requests
-from multiprocessing.dummy import Pool as ThreadPool
 from time import sleep
+
+
 
 class WebPage:
     def __init__(self, url, retry = 0):
@@ -24,11 +25,3 @@ class WebPage:
 
     def getJSON(self):
         return self.html.json()
-
-
-
-class MultiProcessor:
-    def __init__(self, theFunction, theList, poolsize = 50):
-        self.pool = ThreadPool(poolsize)
-        self.resultsList = self.pool.map(theFunction, theList)
-

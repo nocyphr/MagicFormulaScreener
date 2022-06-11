@@ -1,5 +1,6 @@
 import pandas as pd
-from helpers import WebPage, MultiProcessor
+from src.misc import MultiProcessor
+from src.web import WebPage
 
 class Onvista:
     def __init__(self):
