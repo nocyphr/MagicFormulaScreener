@@ -36,7 +36,7 @@ class Onvista:
 
 class Yahoo:
     def __init__(self):
-        isin_list = IsinList('stocksList.csv')
+        isin_list = IsinList('stocksList.csv').isin_list
         self.search_url_list = [(f'https://query2.finance.yahoo.com/v1/finance/search?q={isin}&newsQueryId=news_cie_vespa', isin) for isin in isin_list]
         self.results_list = []
 
@@ -73,7 +73,10 @@ class IsinList:
             raise ValueError(f'{csvName} does not contain a column "isin"')
 
 
-onvista = Onvista()
-onvista.generate_stocks_list()
-Mutate(onvista.save_as).add_column_isin()
-Mutate(onvista.save_as).drop_columns(['last', 'date', 'nsin', 'figures'])
+# onvista = Onvista()
+# onvista.generate_stocks_list()
+# Mutate(onvista.save_as).add_column_isin()
+# Mutate(onvista.save_as).drop_columns(['last', 'date', 'nsin', 'figures'])
+
+yahoo = Yahoo()
+print(yahoo.search_url_list)
