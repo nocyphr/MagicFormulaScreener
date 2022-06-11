@@ -45,3 +45,10 @@ class Mutate:
     def make_a_panda(self, from_list):
         return pd.DataFrame(from_list)
 
+    def join_on_column(self, csv_name, column_name):
+        join_this = Mutate(csv_name).panda
+        to_this = self.panda
+        self.panda = pd.merge(join_this, to_this, on=column_name)
+        self.make_csv()
+
+
