@@ -33,6 +33,7 @@ class Onvista:
         Mutate(self.save_as).add_column_isin()
         Mutate(self.save_as).drop_columns(['last', 'date', 'nsin', 'figures'])
         Mutate(self.save_as).join_on_column('isinSymbolList.csv', 'isin')
+        Mutate(self.save_as).remove_rows_with_symbol_false()
 
 
 class Yahoo:
@@ -74,3 +75,4 @@ class IsinList:
 
 
 
+Mutate('stocksList.csv').remove_rows_with_symbol_false()

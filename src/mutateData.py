@@ -1,5 +1,4 @@
 import pandas as pd
-from os.path import exists
 
 class PandaStocks:
     def __init__(self, Page):
@@ -49,6 +48,10 @@ class Mutate:
         join_this = Mutate(csv_name).panda
         to_this = self.panda
         self.panda = pd.merge(join_this, to_this, on=column_name)
+        self.make_csv()
+
+    def remove_rows_with_symbol_false(self):
+        self.panda = self.panda[self.panda['symbol'] != 'False']
         self.make_csv()
 
 
