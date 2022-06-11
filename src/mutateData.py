@@ -1,5 +1,5 @@
 import pandas as pd
-
+from os.path import exists
 
 class PandaStocks:
     def __init__(self, Page):
@@ -21,7 +21,12 @@ class Mutate:
     def catch_the_panda(self, panda):
         if panda:
             return panda
-        return pd.read_csv(self.csvPath, index_col=None)
+
+        i_exist = exists(self.csvPath)
+        if i_exist:
+            return pd.read_csv(self.csvPath, index_col=None)
+        if i_exist == False:
+            raise FileNotFoundError(f'{self.csvPath} does not seem to exist')
 
 
     def make_csv(self):
@@ -32,6 +37,9 @@ class Mutate:
         self.panda['isin'] = self.panda['url'].apply(lambda x: x.xplit('-')[-1])
         self.make_csv()
 
+    def fetch_isin_list(self):
+        if 'isin' in self.panda.columns:
+            return
 
     def drop_columns(self, column_list):
         self.panda.drop(column_list, axis=1, inplace=True)
