@@ -12,7 +12,7 @@ class PandaStocks:
 
 
 class Mutate:
-    def __init__(self, csvName, panda = False ):
+    def __init__(self, csvName = 'dummy.csv', panda = False ):
         self.csvName = csvName
         self.csvPath = f'./Data/{csvName}'
         self.panda = self.catch_the_panda(panda)
@@ -38,4 +38,6 @@ class Mutate:
         self.make_csv()
 
 
+    def make_a_panda(self, from_list):
+        return pd.DataFrame(from_list)
 

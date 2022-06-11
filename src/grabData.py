@@ -1,4 +1,3 @@
-import pandas as pd
 from src.misc import MultiProcessor
 from src.web import WebPage
 from src.mutateData import PandaStocks, Mutate
@@ -45,30 +44,22 @@ class Yahoo:
             self.searchUrlList = [(f'https://query2.finance.yahoo.com/v1/finance/search?q={isin}&newsQueryId=news_cie_vespa', isin) for isin in isinList]
         self.resultsList = []
 
-    def builtResults(self, args):
-        page = WebPage(args[0], 60)
-        quotes = page.getJSON()['quotes']
-        print(f'working on {args[1]}')
-        result = [args[1], False]
-        if len(quotes):
-            result = [args[1], quotes[0]['symbol']]
-        return result
 
     def getSymbols(self):
         self.resultsList = MultiProcessor(self.builtResults, self.searchUrlList, poolsize = 30).resultsList
+        self.save_data()
+
 
     def save_data(self):
-        panda = pd.DataFrame(self.resultsList)
-        csv = CSV(panda)
-        csv.make_csv('isinSymbolList.csv')
+        panda = Mutate(panda=self.resultsList).make_a_panda()
+        Mutate('isinSymbolList.csv', panda).make_csv()
 
-# o = Onvista()
-# o.getStockList()
-# o.getCSV()
-o = Onvista()
-o.generate_stocks_list('stocksList.csv')
-t = [i for i in o.bigPanda.pdStocks['isin']]
-y = Yahoo(t)
-y.getSymbols()
-print(y.resultsList)
-y.save_data()
+
+    def builtResults(self, args):
+        url, isin = args[0], args[1]
+        page = WebPage(url, 60)
+        symbol_exists = page.getJSON()['quotes']
+        return [isin, (symbol_exists[0]['symbol'] if symbol_exists else False)]
+
+
+
