@@ -17,9 +17,11 @@ class WebPage:
             if response.ok:
                 return response
             if self.retry:
+                print('i sleep now')
                 sleep(self.retry)
                 return (self.getHTML())
         except:
+            print('sleep for exception')
             sleep(5)
             return self.getHTML()
 
