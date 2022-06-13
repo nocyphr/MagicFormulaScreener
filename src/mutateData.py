@@ -5,7 +5,7 @@ import pandas as pd
 class Mutate:
     def __init__(self, csvName = 'dummy.csv', panda = False, read = True):
         self.csvName = csvName
-        self.csvPath = f'../Data/{self.csvName}'
+        self.csvPath = f'./Data/{self.csvName}'
         self.panda = self.catch_a_panda(panda, read)
 
 
@@ -47,6 +47,9 @@ class Mutate:
     def join_pandas(self, pandaList):
         panda = [self.panda] + pandaList
         return pd.concat(panda, ignore_index = True)
+
+    def rename_panda_columns(self, rename_dictionary):
+        self.panda.rename(columns=rename_dictionary, inplace=True)
 
 
 
