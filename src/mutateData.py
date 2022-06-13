@@ -5,7 +5,7 @@ import pandas as pd
 class Mutate:
     def __init__(self, csvName = 'dummy.csv', panda = False, read = True):
         self.csvName = csvName
-        self.csvPath = f'./Data/{self.csvName}'
+        self.csvPath = f'../Data/{self.csvName}'
         self.panda = self.catch_a_panda(panda, read)
 
 
