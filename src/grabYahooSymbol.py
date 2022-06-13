@@ -21,12 +21,18 @@ class Yahoo:
 
     def save_data(self):
         symbol_file_name = self.parameters.name_of_symbol_file()
-        base_panda = Mutate(symbol_file_name)
+        base_panda = Mutate(csvName=symbol_file_name)
 
-        mutate_panda = Mutate(panda=self.results_list, read=False)
-        append_panda = mutate_panda.make_a_panda()
+        dummy = Mutate(read=False)
+        append_panda = dummy.make_a_panda(self.results_list)
 
-        joined_panda = base_panda.join_pandas(append_panda)
+        rename_columns_dictionary = {
+            0: 'isin',
+            1: 'symbol'
+        }
+        append_panda = Mutate(panda=append_panda, read=False).rename_panda_columns(rename_columns_dictionary)
+
+        joined_panda = base_panda.join_pandas([append_panda.panda])
         joined_panda = Mutate(symbol_file_name, joined_panda, False)
 
         joined_panda.make_csv()
