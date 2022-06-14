@@ -32,8 +32,8 @@ class Yahoo:
         }
         append_panda = Mutate(panda=append_panda, read=False).rename_panda_columns(rename_columns_dictionary)
 
-        joined_panda = base_panda.join_pandas([append_panda.panda])
-        joined_panda = Mutate(symbol_file_name, joined_panda, False)
+        joined_panda = base_panda.join_pandas([append_panda])
+        joined_panda = Mutate(symbol_file_name, joined_panda, False).panda
 
         joined_panda.make_csv()
 
