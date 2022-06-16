@@ -45,4 +45,4 @@ class Onvista:
 
 
 
-Onvista().generate_stocks_list()
+# Onvista().generate_stocks_list() -> run from bashfile
