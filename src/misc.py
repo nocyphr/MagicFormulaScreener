@@ -127,7 +127,7 @@ class IsinList:
             isin_series_stocks_list = set(i for i in self.stocks_list['isin'].values)
             isin_series_symbol_list = set(i for i in self.isinSymbolList['isin'].values)
 
-            self.isin_list = list(isin_series_stocks_list - isin_series_symbol_list) + list(isin_series_symbol_list - isin_series_stocks_list)
+            self.isin_list = list(isin_series_stocks_list - isin_series_symbol_list) #+ list(isin_series_symbol_list - isin_series_stocks_list)
             print(f'now starting lookup for {len(self.isin_list)} missing entries')
         else:
             raise ValueError(f'{csvName} does not contain a column "isin"')
