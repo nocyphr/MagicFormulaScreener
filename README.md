@@ -13,8 +13,9 @@
 - [x] clean up index  
 - [x] fill in blanks  
 - [x] check for false entries
-- [ ] use torpy to simulate proxy  
+- [ ] write unittests + refactor
 - [ ] get number of shares per stock and last price(onvista)  
 - [ ] remove dead/unavailable companies  
 - [ ] adjust ISIN:Symbol matching method to lookup first in existing index before going to yahoo
 - [ ] get fundamentals (yahoo)
+- [ ] use torpy to simulate proxy
