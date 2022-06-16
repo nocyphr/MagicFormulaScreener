@@ -58,4 +58,4 @@ class Yahoo:
         return [isin, symbol]
 
 
-Yahoo().get_symbols()
+# Yahoo().get_symbols()
