@@ -1,10 +1,9 @@
 import requests
+from torpy.http.requests import TorRequests
 from time import sleep
 
-
-
 class WebPage:
-    def __init__(self, url, retry = 0):
+    def __init__(self, url, retry = 0, ):
         self.header = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"}
         self.url = url
         self.retry = retry
@@ -17,9 +16,9 @@ class WebPage:
             if response.ok:
                 return response
             if self.retry:
-                print('i sleep now')
                 sleep(self.retry)
                 return (self.getHTML())
+
         except:
             print('sleep for exception')
             sleep(5)
