@@ -40,15 +40,9 @@ class Mutate:
         self.panda = pd.merge(join_this, to_this, on=column_name)
         self.make_csv()
 
-    def remove_rows_with_symbol_false(self):
-        self.panda = self.panda[self.panda['symbol'] != 'False']
-        self.make_csv()
-
-
     def join_pandas(self, pandaList):
         panda = [self.panda] + pandaList
         return pd.concat(panda, ignore_index = True)
-
 
     def rename_panda_columns(self, rename_dictionary):
         self.panda.rename(columns=rename_dictionary, inplace=True)
