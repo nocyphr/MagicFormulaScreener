@@ -7,12 +7,11 @@ class Onvista(OnvistaParameters):
     def __init__(self):
         super().__init__()
 
-        page = self.page()
-        self.big_panda = PandaStocks(page).pdStocks
+        self.big_panda = PandaStocks(self.page).pdStocks
 
 
     def generate_stocks_list(self):
-        url_list = [self.url(page) for page in range(1, self.max_results, 50)]
+        url_list = [self.onvista_url(page) for page in range(1, self.max_results, 50)]
 
         multiprocessor = MultiProcessor(self.build_panda, url_list)
         panda_list = multiprocessor.results_list
@@ -43,4 +42,4 @@ class Onvista(OnvistaParameters):
 
 
 
-Onvista().generate_stocks_list() #-> run from bashfile
+# Onvista().generate_stocks_list() #-> run from bashfile

@@ -2,18 +2,19 @@ from multiprocessing.dummy import Pool as ThreadPool
 from web import WebPage
 from mutateData import Mutate
 
-
-
 class MultiProcessor:
     def __init__(self, the_function, the_list, poolsize = 50):
         self.pool = ThreadPool(poolsize)
         self.results_list = self.pool.map(the_function, the_list)
 
+
+
 class URL:
     def __init__(self):
-        self.onvista_base_url = 'https://www.onvista.de/aktien/boxes/finder-json?offset='
-        self.onvista_first_page = self.onvista_base_url + '0'
-        self.yahoo_url = lambda x : f'https://query2.finance.yahoo.com/v1/finance/search?q={x}&newsQueryId=news_cie_vespa'
+        self.onvista_url = lambda x: f'https://www.onvista.de/aktien/boxes/finder-json?offset={x}'
+        self.yahoo_url = lambda x: f'https://query2.finance.yahoo.com/v1/finance/search?q={x}&newsQueryId=news_cie_vespa'
+
+
 
 class Files(URL):
     def __init__(self):
@@ -26,22 +27,9 @@ class Files(URL):
 class OnvistaParameters(Files):
     def __init__(self):
         super().__init__()
-
-
-        self.results = OnvistaSearchResults(self.onvista_first_page)
+        self.results = OnvistaSearchResults(self.onvista_url(0))
         self.max_results = self.results.max_results + 50
-
-    def results(self):
-        return self.results
-
-    def page(self):
-        return self.results.page
-
-    def url(self, page):
-        return self.onvista_base_url + f'{page}'
-
-    def save_as(self):
-        return self.stocks_file
+        self.page = self.results.page
 
 
 
@@ -55,7 +43,6 @@ class OnvistaSearchResults:
 class YahooParameters(Files):
     def __init__(self):
         super().__init__()
-
         self.symbol_dictionary = self.create_symbol_dictionary()
         self.url_arguments = self.create_argument_list()
 
@@ -101,7 +88,6 @@ class YahooParameters(Files):
 class IsinList(Files):
     def __init__(self):
         super().__init__()
-
         self.isinSymbolList = Mutate(self.isin_file).panda
         self.stocks_list = Mutate(self.stocks_file).panda
         if 'isin' in self.stocks_list.columns:
