@@ -9,37 +9,39 @@ class MultiProcessor:
         self.pool = ThreadPool(poolsize)
         self.results_list = self.pool.map(the_function, the_list)
 
-
-
-class OnvistaParameters:
+class URL:
     def __init__(self):
-        self.parameters = {
-            'url': 'https://www.onvista.de/aktien/boxes/finder-json?offset=',
-            'results': OnvistaSearchResults('https://www.onvista.de/aktien/boxes/finder-json?offset=0'),
-            'save_as': 'stocksList.csv'
-        }
+        self.onvista_base_url = 'https://www.onvista.de/aktien/boxes/finder-json?offset='
+        self.onvista_first_page = self.onvista_base_url + '0'
+        self.yahoo_url = lambda x : f'https://query2.finance.yahoo.com/v1/finance/search?q={x}&newsQueryId=news_cie_vespa'
 
+class Files(URL):
+    def __init__(self):
+        super().__init__()
+        self.stocks_file = 'stocksList.csv'
+        self.isin_file = 'isinSymbolList.csv'
+
+
+
+class OnvistaParameters(Files):
+    def __init__(self):
+        super().__init__()
+
+
+        self.results = OnvistaSearchResults(self.onvista_first_page)
+        self.max_results = self.results.max_results + 50
 
     def results(self):
-        return self.parameters['results']
-
+        return self.results
 
     def page(self):
-        results = self.results()
-        return results.page
-
-
-    def max_results(self):
-        results = self.results()
-        return results.max_results + 50
-
+        return self.results.page
 
     def url(self, page):
-        return self.parameters['url'] + str(page)
-
+        return self.onvista_base_url + f'{page}'
 
     def save_as(self):
-        return self.parameters['save_as']
+        return self.stocks_file
 
 
 
@@ -50,22 +52,17 @@ class OnvistaSearchResults:
 
 
 
-class YahooParameters:
+class YahooParameters(Files):
     def __init__(self):
-        self.file_names = {
-            'stocksList': 'stocksList.csv',
-            'symbolList': 'isinSymbolList.csv',
-        }
+        super().__init__()
 
-        self.iterables = {
-            'symbol_dictionary': self.create_symbol_dictionary(),
-            'url_arguments': self.create_argument_list()
-        }
+        self.symbol_dictionary = self.create_symbol_dictionary()
+        self.url_arguments = self.create_argument_list()
+
 
     def create_symbol_dictionary(self):
-        symbol_file_name = self.file_names['symbolList']
         try:
-            symbol_panda = Mutate(symbol_file_name).panda
+            symbol_panda = Mutate(self.isin_file).panda
 
             isin_column = list(symbol_panda['isin'])
             symbol_column = list(symbol_panda['symbol'])
@@ -78,56 +75,42 @@ class YahooParameters:
                 return {}
 
         except:
-            empty_file = open(symbol_file_name, 'w+')
+            empty_file = open(self.isin_file, 'w+')
             empty_file.write('isin,symbol')
             empty_file.close()
             return {}
 
     def create_argument_list(self):
-        isin_list = self.isin_list()
-
-        url_first_part = 'https://query2.finance.yahoo.com/v1/finance/search?q='
-        url_last_part = '&newsQueryId=news_cie_vespa'
-        url_list = []
-
-        for isin in isin_list:
-            url = url_first_part + isin + url_last_part
-            arguments = (url, isin)
-            url_list += [arguments]
-
-        return url_list
+        url_isin_tuple_list = [(self.yahoo_url(isin), isin) for isin in self.isin_list()]
+        return url_isin_tuple_list
 
 
     def isin_list(self):
-        isin_file_name = self.file_names['stocksList']
-        isin_from_stocks_list = IsinList(isin_file_name).isin_list
-
-        return isin_from_stocks_list
+        return IsinList().isin_list
 
     def name_of_symbol_file(self):
-        return self.file_names['symbolList']
+        return self.isin_file
 
-    def symbol_dictionary(self):
-        return self.iterables['symbol_dictionary']
 
     def isin_keys(self):
-        symbol_dictionary = self.symbol_dictionary()
+        symbol_dictionary = self.symbol_dictionary
         return symbol_dictionary.keys()
 
-    def url_arguments(self):
-        return self.iterables['url_arguments']
 
-# Ugly hard coded filename
-class IsinList:
-    def __init__(self, csvName):
-        self.isinSymbolList = Mutate('isinSymbolList.csv').panda
-        self.stocks_list = Mutate(csvName).panda
+
+class IsinList(Files):
+    def __init__(self):
+        super().__init__()
+
+        self.isinSymbolList = Mutate(self.isin_file).panda
+        self.stocks_list = Mutate(self.stocks_file).panda
         if 'isin' in self.stocks_list.columns:
 
             isin_series_stocks_list = set(i for i in self.stocks_list['isin'].values)
             isin_series_symbol_list = set(i for i in self.isinSymbolList['isin'].values)
 
-            self.isin_list = list(isin_series_stocks_list - isin_series_symbol_list) #+ list(isin_series_symbol_list - isin_series_stocks_list)
+            self.isin_list = list(isin_series_stocks_list - isin_series_symbol_list)
             print(f'now starting lookup for {len(self.isin_list)} missing entries')
         else:
-            raise ValueError(f'{csvName} does not contain a column "isin"')
+            raise ValueError(f'{self.stocks_file} does not contain a column "isin"')
+
