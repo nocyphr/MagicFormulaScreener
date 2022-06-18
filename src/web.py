@@ -1,16 +1,19 @@
-import requests
 from time import sleep
 
+import requests
+
+
 class WebPage:
-    def __init__(self, url, retry = 0, ):
-        self.header = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"}
+    def __init__(self, url, retry=0, ):
+        self.header = {
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"}
         self.url = url
         self.retry = retry
         self.html = self.getHTML()
 
     def getHTML(self):
         try:
-            response = requests.get(self.url, headers = self.header)
+            response = requests.get(self.url, headers=self.header)
 
             if response.ok:
                 return response

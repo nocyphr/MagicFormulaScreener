@@ -2,6 +2,7 @@ from misc import MultiProcessor
 from parameters import *
 from web import WebPage
 
+
 class Onvista(OnvistaParameters):
     def __init__(self):
         super().__init__()
@@ -33,7 +34,6 @@ class Onvista(OnvistaParameters):
         stocks_csv.drop_columns(columns_to_drop)
 
 
-
 class Yahoo(YahooParameters):
     def __init__(self):
         super().__init__()
@@ -48,7 +48,6 @@ class Yahoo(YahooParameters):
             self.save_new_isins_to_file()
 
         Shapeshift(from_file=self.isin_file).join_isinlist_to_stocks_list()
-
 
     def save_new_isins_to_file(self):
         isin_base = Shapeshift(from_file=self.isin_file)
@@ -70,7 +69,6 @@ class Yahoo(YahooParameters):
         symbol_dictionary = self.symbol_dictionary
 
         if isin not in isin_list:
-
             page = WebPage(url, 120)
             symbol_exists = page.getJSON()['quotes']
             print(f'{isin}: {symbol_exists}')
@@ -78,5 +76,3 @@ class Yahoo(YahooParameters):
 
         symbol = symbol_dictionary[isin]
         return [isin, symbol]
-
-t = Onvista().generate_stocks_list()

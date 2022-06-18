@@ -1,10 +1,11 @@
 import pandas as pd
 
+
 class URL:
     def __init__(self):
         self.onvista_url = lambda x: f'https://www.onvista.de/aktien/boxes/finder-json?offset={x}'
-        self.yahoo_url = lambda x: f'https://query2.finance.yahoo.com/v1/finance/search?q={x}&newsQueryId=news_cie_vespa'
-
+        self.yahoo_url = lambda \
+            x: f'https://query2.finance.yahoo.com/v1/finance/search?q={x}&newsQueryId=news_cie_vespa'
 
 
 class Statics(URL):
@@ -15,9 +16,8 @@ class Statics(URL):
         self.file_path = lambda x: f'../Data/{x}'
 
 
-
 class Shapeshift(Statics):
-    def __init__(self, from_file = False, from_panda = False, from_list = False, from_webpage = False):
+    def __init__(self, from_file=False, from_panda=False, from_list=False, from_webpage=False):
         super().__init__()
         if from_file:
             self.panda = pd.read_csv(self.file_path(from_file), index_col=None)
@@ -46,7 +46,7 @@ class Shapeshift(Statics):
         self.export_csv(self.stocks_file)
 
     def join_pandas(self, second_panda):
-        self.panda = pd.concat([self.panda] +  second_panda, ignore_index = True)
+        self.panda = pd.concat([self.panda] + second_panda, ignore_index=True)
 
     def rename_panda_columns(self, rename_dictionary):
         self.panda.rename(columns=rename_dictionary, inplace=True)

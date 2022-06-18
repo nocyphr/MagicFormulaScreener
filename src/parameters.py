@@ -1,5 +1,6 @@
-from web import WebPage
 from shapeshifting import Shapeshift, Statics
+from web import WebPage
+
 
 class OnvistaSearchResults:
     def __init__(self, url):
@@ -7,12 +8,11 @@ class OnvistaSearchResults:
         self.max_results = self.page.getJSON()['metaData']['totalHits']
 
 
-
 class IsinList(Statics):
     def __init__(self):
         super().__init__()
-        self.isinSymbolList = Shapeshift(from_file=self.isin_file).panda #Mutate(self.isin_file).panda
-        self.stocks_list = Shapeshift(from_file=self.stocks_file).panda #Mutate(self.stocks_file).panda
+        self.isinSymbolList = Shapeshift(from_file=self.isin_file).panda  # Mutate(self.isin_file).panda
+        self.stocks_list = Shapeshift(from_file=self.stocks_file).panda  # Mutate(self.stocks_file).panda
         if 'isin' in self.stocks_list.columns:
 
             isin_series_stocks_list = set(i for i in self.stocks_list['isin'].values)
@@ -25,7 +25,6 @@ class IsinList(Statics):
             raise ValueError(f'{self.stocks_file} does not contain a column "isin"')
 
 
-
 class OnvistaParameters(Statics):
     def __init__(self):
         super().__init__()
@@ -34,11 +33,9 @@ class OnvistaParameters(Statics):
         self.page = self.results.page
 
 
-
 class YahooParameters(Statics):
     def __init__(self):
         super().__init__()
-
 
     def create_symbol_dictionary(self):
         try:
@@ -64,15 +61,12 @@ class YahooParameters(Statics):
         url_isin_tuple_list = [(self.yahoo_url(isin), isin) for isin in self.isin_list()]
         return url_isin_tuple_list
 
-
     def isin_list(self):
         return IsinList().isin_list
 
     def name_of_symbol_file(self):
         return self.isin_file
 
-
     def isin_keys(self):
         symbol_dictionary = self.symbol_dictionary
         return symbol_dictionary.keys()
-
