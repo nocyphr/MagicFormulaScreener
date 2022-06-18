@@ -22,7 +22,7 @@ mv isinSymbolList2.csv isinSymbolList.csv
 echo 'switching to src-Directory'
 cd ../src
 echo 'joining isinSymbolList to stocksList on column isin'
-python -c 'from mutateData import Mutate; Mutate(csvName="stocksList.csv").join_on_column("isinSymbolList.csv", "isin")'
+python -c 'from shapeshifting import Shapeshift; Shapeshift(from_file="stocksList.csv").join_isinlist_to_stocks_list'
 echo 'switching to Data-Directory'
 cd ../Data
 echo 'removing entries without ticker symbol from stockslist'

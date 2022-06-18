@@ -1,16 +1,11 @@
-from mutateData import PandaStocks, Mutate
 from misc import MultiProcessor
-from parameters import OnvistaParameters, OnvistaSearchResults, YahooParameters
+from parameters import *
 from web import WebPage
-
-
 
 class Onvista(OnvistaParameters):
     def __init__(self):
         super().__init__()
-
-        self.big_panda = PandaStocks(self.page).pdStocks
-
+        self.big_panda = Shapeshift(from_webpage=self.page)
 
     def generate_stocks_list(self):
         url_list = [self.onvista_url(page) for page in range(1, self.max_results, 50)]
@@ -18,66 +13,55 @@ class Onvista(OnvistaParameters):
         multiprocessor = MultiProcessor(self.build_panda, url_list)
         panda_list = multiprocessor.results_list
 
-        mutate_panda = Mutate(panda=self.big_panda, read=False)
-        self.big_panda = mutate_panda.join_pandas(panda_list)
-
-        self.save_data()
-        self.clean_dataset()
-
-
-    def save_data(self):
-        panda = self.big_panda
-        save = Mutate(csvName=self.stocks_file, panda=panda, read=False)
-        save.make_csv()
-
+        self.big_panda.join_pandas(panda_list)
+        self.big_panda.export_csv(self.stocks_file)
+        self.clean_stocks_file()
 
     def build_panda(self, url):
         results_page = OnvistaSearchResults(url).page
-        return PandaStocks(results_page).pdStocks
+        return Shapeshift(from_webpage=results_page).panda
 
+    def clean_stocks_file(self):
+        stocks_csv = Shapeshift(from_file=self.stocks_file)
+        stocks_csv.extract_isin_into_new_column()
+        columns_to_drop = [
+            'last',
+            'date',
+            'nsin',
+            'figures',
+        ]
+        stocks_csv.drop_columns(columns_to_drop)
 
-    def clean_dataset(self):
-        mutate_panda = Mutate(self.stocks_file)
-
-        mutate_panda.add_column_isin()
-        mutate_panda.drop_columns(['last', 'date', 'nsin', 'figures'])
 
 
 class Yahoo(YahooParameters):
     def __init__(self):
         super().__init__()
-
         self.results_list = []
-
+        self.symbol_dictionary = self.create_symbol_dictionary()
+        self.url_arguments = self.create_argument_list()
 
     def get_symbols(self):
-        url_arguments = self.url_arguments
-
-        multiprocessor = MultiProcessor(self.build_results, url_arguments, poolsize=38)
+        multiprocessor = MultiProcessor(self.build_results, self.url_arguments, poolsize=38)
         self.results_list = multiprocessor.results_list
+        if self.results_list:
+            self.save_new_isins_to_file()
 
-        self.save_data()
+        Shapeshift(from_file=self.isin_file).join_isinlist_to_stocks_list()
 
 
-    def save_data(self):
-        base_panda = Mutate(csvName=self.isin_file)
+    def save_new_isins_to_file(self):
+        isin_base = Shapeshift(from_file=self.isin_file)
+        isin_addon = Shapeshift(from_list=self.results_list)
 
-        dummy = Mutate(read=False)
-        append_panda = dummy.make_a_panda(self.results_list)
-
-        rename_columns_dictionary = {
+        columns_dictionary = {
             0: 'isin',
             1: 'symbol'
         }
-        append_panda = Mutate(panda=append_panda, read=False)
-        append_panda.rename_panda_columns(rename_columns_dictionary)
 
-        joined_panda = base_panda.join_pandas([append_panda.panda])
-        joined_panda = Mutate(self.isin_file, joined_panda, False)
-
-        joined_panda.make_csv()
-
-
+        isin_addon.rename_panda_columns(columns_dictionary)
+        isin_base.join_pandas([isin_addon.panda])
+        isin_base.export_csv(self.isin_file)
 
     def build_results(self, args):
         url, isin = args[0], args[1]
@@ -94,3 +78,5 @@ class Yahoo(YahooParameters):
 
         symbol = symbol_dictionary[isin]
         return [isin, symbol]
+
+t = Onvista().generate_stocks_list()
