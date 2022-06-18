@@ -1,5 +1,4 @@
 import requests
-from torpy.http.requests import TorRequests
 from time import sleep
 
 class WebPage:

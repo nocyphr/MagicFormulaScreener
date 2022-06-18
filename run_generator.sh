@@ -1,6 +1,6 @@
 cd src
 echo 'now grabbing stocksList'
-python -c 'from grabOnvista import Onvista; Onvista().generate_stocks_list()'
+python -c 'from crawlers import Onvista; Onvista().generate_stocks_list()'
 echo 'switching to Data-Directory'
 cd ../Data
 echo 'removing duplicate entries in stocksList.csv'
@@ -11,7 +11,7 @@ mv stocksList2.csv stocksList.csv
 echo 'switching to src-Directory'
 cd ../src
 echo 'now translating ISIN to Symbol'
-python -c 'from grabYahooSymbol import Yahoo; Yahoo().get_symbols()'
+python -c 'from crawlers import Yahoo; Yahoo().get_symbols()'
 echo 'switching to Data-Directory'
 cd ../Data
 echo 'removing duplicate entries in isinSymbolList.csv'
